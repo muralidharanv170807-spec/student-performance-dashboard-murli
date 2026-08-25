@@ -1,11 +1,20 @@
+<<<<<<< HEAD
 # 🤖 AI-Based Student Performance Prediction System
+=======
+# Student Performance Prediction System
+>>>>>>> bdcb0f4 (Update student performance application)
 
-![CI Pipeline](https://github.com/muralidharanv170807-spec/student-performance-cicd/actions/workflows/ci-cd.yml/badge.svg)
+A full-stack machine learning project for predicting student academic performance, monitoring risk, and presenting actionable analytics through a responsive dashboard.
 
+<<<<<<< HEAD
 An end-to-end **AI and DevOps project** that predicts student academic performance using a machine learning model and automatically delivers the application through a **CI/CD pipeline** using GitHub Actions, Docker, and Render.
+=======
+## Problem Statement
+>>>>>>> bdcb0f4 (Update student performance application)
 
----
+Educational institutions need a quick way to identify students who may need support before academic performance declines. This project combines a trained classification model, API services, dashboard analytics, and reliable CI checks to help instructors and students evaluate performance and act early.
 
+<<<<<<< HEAD
 ## 🌐 Live Demo
 
 ### Frontend
@@ -78,12 +87,50 @@ flowchart LR
     H --> I[Random Forest ML Model]
     I --> J[Prediction + Confidence]
     J --> G
+=======
+## Objectives
+
+- Predict student performance using real academic features.
+- Keep the existing model and API behavior compatible while extending the system.
+- Add early warning signals and personalized guidance.
+- Show feature importance from the actual trained model.
+- Compare multiple ML algorithms using real metrics.
+- Store prediction history in SQLite for dashboard analytics.
+- Validate the system with automated backend tests and frontend builds.
+
+## Technologies Used
+
+- Python
+- FastAPI
+- Pydantic
+- SQLite
+- Scikit-learn
+- Pandas
+- Joblib
+- React
+- Vite
+- Docker
+- GitHub Actions
+- Pytest
+
+## System Architecture
+
+```mermaid
+flowchart LR
+    U[Student / Instructor] --> F[React Frontend]
+    F --> A[FastAPI Backend]
+    A --> DB[(SQLite Database)]
+    A --> M[Random Forest Model]
+    M --> R[Prediction + Risk + Recommendations]
+    R --> F
+>>>>>>> bdcb0f4 (Update student performance application)
 ```
 
----
+## Dataset Description
 
-## 🤖 Machine Learning
+The dataset in [dataset/student_performance.csv](dataset/student_performance.csv) includes:
 
+<<<<<<< HEAD
 ### Dataset
 
 The project uses a dataset containing **500 student records** and **6 columns**.
@@ -114,25 +161,62 @@ The machine learning model uses five input features:
 ### Target Variable
 
 The target variable is:
+=======
+- attendance
+- internal_marks
+- assignment_percentage
+- study_hours
+- previous_marks
+- performance
 
-```text
-performance
-```
+The target column is the categorical label for performance:
 
+- Good
+- Average
+- Poor
+
+## ML Workflow
+>>>>>>> bdcb0f4 (Update student performance application)
+
+1. Load the dataset.
+2. Split the dataset into train and test sets.
+3. Train the Random Forest classifier.
+4. Save the model, feature list, and encoder.
+5. Expose prediction and analytics endpoints through FastAPI.
+6. Evaluate model comparison metrics for alternate classifiers.
+
+<<<<<<< HEAD
 Possible target values:
+=======
+## Features Implemented
+>>>>>>> bdcb0f4 (Update student performance application)
 
-```text
-Good
-Average
-Poor
-```
+- Student performance prediction
+- Confidence score
+- Risk-level detection
+- Personalized recommendations
+- Feature importance display from model metadata
+- What-if comparison workflow
+- Prediction history stored in SQLite
+- Analytics summary for historical predictions
+- Downloadable plain-text report
+- Responsive dashboard UI
 
+<<<<<<< HEAD
 ### Machine Learning Algorithm
+=======
+## Model Comparison
+>>>>>>> bdcb0f4 (Update student performance application)
 
-The project uses:
+The backend compares several classifiers using real metrics from the dataset:
 
-**Random Forest Classifier**
+- Logistic Regression
+- Decision Tree
+- Random Forest
+- K-Nearest Neighbors
+- SVM
 
+<<<<<<< HEAD
 ### Training Process
 
 ```text
@@ -152,17 +236,26 @@ Model Evaluation
       ↓
 Save Trained Model
 ```
+=======
+Metrics returned by the API include:
 
-### Model Accuracy
+- Accuracy
+- Precision
+- Recall
+- F1-score
+>>>>>>> bdcb0f4 (Update student performance application)
 
-The trained model achieved:
+The best model is selected using the highest F1 score, while the current Random Forest remains the production fallback used by the app.
 
-```text
-Accuracy: 84.00%
-```
+## API Endpoints
 
-on the test split used during development.
+### GET /
+Returns a basic service status message.
 
+### GET /health
+Returns health and model status.
+
+<<<<<<< HEAD
 > Model performance can change if the dataset, preprocessing, train/test split, or model configuration is changed.
 
 ### Saved Model
@@ -172,32 +265,38 @@ The trained model is stored at:
 ```text
 backend/model/student_model.pkl
 ```
+=======
+### POST /predict
+Returns:
+>>>>>>> bdcb0f4 (Update student performance application)
 
----
+- prediction
+- confidence
+- risk_level
+- reasons
+- recommendations
+- feature_importance
 
+<<<<<<< HEAD
 ## 🧪 Prediction Example
+=======
+### GET /feature-importance
+Returns feature names and importances from the trained model.
+>>>>>>> bdcb0f4 (Update student performance application)
 
-### Input
+### GET /model-comparison
+Returns comparison metrics for multiple classifiers.
 
-```json
-{
-  "attendance": 85,
-  "internal_marks": 78,
-  "assignment_percentage": 90,
-  "study_hours": 4,
-  "previous_marks": 82
-}
-```
+### GET /prediction-history
+Returns stored prediction history.
 
-### Output
+### GET /analytics
+Returns aggregate prediction statistics.
 
-```json
-{
-  "prediction": "Good",
-  "confidence": 66.0
-}
-```
+### POST /what-if
+Compares the current input with modified input and returns the change in prediction.
 
+<<<<<<< HEAD
 The confidence value depends on the input and trained model.
 
 ---
@@ -347,13 +446,26 @@ docker ps
 ```text
 http://127.0.0.1:8000
 ```
+=======
+## Frontend Structure
+>>>>>>> bdcb0f4 (Update student performance application)
 
----
+- [frontend/index.html](frontend/index.html)
+- [frontend/src/main.jsx](frontend/src/main.jsx)
+- [frontend/src/style.css](frontend/src/style.css)
 
-## 🧪 Testing
+The frontend provides:
 
-The project uses **Pytest** for backend API testing.
+- Student data entry form
+- Prediction result cards
+- Personalized recommendations
+- Risk and analytics summary
+- What-if comparison panel
+- Prediction history list
+- Feature importance bar visualization
+- Report download button
 
+<<<<<<< HEAD
 ### Test Cases
 
 The project tests:
@@ -365,17 +477,31 @@ The project tests:
 ### Run Tests
 
 From the project root:
+=======
+## Database
 
-```bash
-python -m pytest
-```
+A lightweight SQLite database is used for storing prediction history.
 
-Expected result:
+Database file:
+>>>>>>> bdcb0f4 (Update student performance application)
 
-```text
-3 passed
-```
+- [backend/student_performance.db](backend/student_performance.db)
 
+The schema stores results such as:
+
+- attendance
+- internal_marks
+- assignment_percentage
+- study_hours
+- previous_marks
+- prediction
+- confidence
+- risk_level
+- reasons
+- recommendations
+- created_at
+
+<<<<<<< HEAD
 Warnings may appear during testing, but the important result is that all tests pass successfully.
 
 ---
@@ -606,11 +732,55 @@ python -m venv venv
 ```
 
 Activate:
+=======
+## Docker
+
+### Build
+
+```bash
+docker build -t student-performance-api .
+```
+
+### Run
+
+```bash
+docker run -d --name student-performance-container -p 8000:8000 student-performance-api
+```
+
+## CI/CD Pipeline
+
+The GitHub Actions workflow runs:
+
+- backend dependency installation
+- backend test suite
+- frontend dependency installation
+- frontend production build
+- Docker image build
+
+Workflow file:
+
+- [.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml)
+
+## Deployment
+
+This project is ready for deployment on any compatible hosting platform. The backend exposes the prediction API through FastAPI and the frontend is served as a React app.
+
+## How to Run Locally
+
+### 1. Create and activate a virtual environment
+
+```bash
+python -m venv venv
+```
+
+Windows PowerShell:
+>>>>>>> bdcb0f4 (Update student performance application)
 
 ```powershell
 .\venv\Scripts\Activate.ps1
 ```
 
+<<<<<<< HEAD
 ---
 
 ### 3. Install Backend Dependencies
@@ -743,11 +913,74 @@ git commit -m "Update project"
 
 ```bash
 git push origin main
+=======
+### 2. Install backend dependencies
+
+```bash
+pip install -r backend/requirements.txt
 ```
 
-Then:
+### 3. Start the backend
+
+```bash
+uvicorn backend.app:app --reload
+```
+
+Visit:
+
+- http://127.0.0.1:8000
+- http://127.0.0.1:8000/docs
+
+### 4. Start the frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Visit:
+
+- http://localhost:5173
+
+If you deploy the backend elsewhere, set the frontend environment variable:
+
+```bash
+VITE_API_BASE_URL=http://127.0.0.1:8000
+>>>>>>> bdcb0f4 (Update student performance application)
+```
+
+## Environment Variables
+
+- VITE_API_BASE_URL: frontend API endpoint override
+
+## Testing
+
+Run the backend tests:
+
+```bash
+python -m pytest -q
+```
+
+The project also verifies the frontend build with:
+
+```bash
+cd frontend
+npm run build
+```
+
+## Future Enhancements
+
+- Role-based access for staff versus students
+- Authentication and user profiles
+- More advanced charts and trend analysis
+- Automated retraining pipeline
+- Deployment-specific environment configuration
+
+## Project Structure
 
 ```text
+<<<<<<< HEAD
 GitHub
    ↓
 GitHub Actions
@@ -761,10 +994,36 @@ Build Frontend
 Render Auto Deploy
    ↓
 Updated Live Application
+=======
+student-performance-cicd-starter/
+├── backend/
+│   ├── app.py
+│   ├── requirements.txt
+│   ├── model/
+│   ├── tests/
+│   └── student_performance.db
+├── dataset/
+│   └── student_performance.csv
+├── frontend/
+│   ├── index.html
+│   ├── package.json
+│   └── src/
+├── ml/
+│   └── train.py
+├── .github/
+│   └── workflows/
+│       └── ci-cd.yml
+├── Dockerfile
+├── docker-compose.yml
+├── pytest.ini
+├── README.md
+└── .gitignore
+>>>>>>> bdcb0f4 (Update student performance application)
 ```
 
----
+## Notes
 
+<<<<<<< HEAD
 ## 📚 Learning Outcomes
 
 This project demonstrates practical experience with:
@@ -854,3 +1113,8 @@ The complete workflow starts from **machine learning model development**, contin
 ## 📌 Repository
 
 https://github.com/muralidharanv170807-spec/student-performance-cicd
+=======
+- The prediction logic is powered by the actual trained model.
+- Risk thresholds and recommendation logic are defined in the backend as configurable values.
+- All analytics and history come from the real app data and database records.
+>>>>>>> bdcb0f4 (Update student performance application)
