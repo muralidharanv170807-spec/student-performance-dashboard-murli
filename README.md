@@ -1,44 +1,70 @@
-# Student Performance Prediction Dashboard
+# 🎓 Student Performance Prediction Dashboard
 
-A full-stack project that predicts student academic performance using a trained Random Forest model, FastAPI, and a React dashboard.
+A full-stack **Student Performance Prediction System** that uses Machine Learning to predict student academic performance and identify potential academic risks.
 
-## Project Description
+The application provides a React dashboard connected to a FastAPI backend and a trained Random Forest machine learning model.
 
-This project helps identify likely student outcomes, flag early warning risk signals, and show actionable recommendations through a clean analytics dashboard. It combines a trained model, a backend API, a SQLite database, and a responsive frontend.
+## 🚀 Features
 
-## Features
+* 📊 Student performance prediction
+* 🤖 Random Forest Machine Learning model
+* 🎯 Performance classification:
 
-- Student performance prediction for Good, Average, and Poor outcomes
-- Confidence score from model probability
-- Risk assessment and personalized recommendations
-- Feature importance visualization from the trained model
-- What-if comparison workflow
-- Prediction history stored in SQLite
-- Analytics summary for historical predictions
-- Downloadable plain-text student report
-- Responsive dashboard UI
-- GitHub Actions CI checks
-- Docker support
+  * Good
+  * Average
+  * Poor
+* 📈 Prediction confidence
+* ⚠️ Risk assessment:
 
-## Technology Stack
+  * Low
+  * Medium
+  * High
+* 💡 Personalized recommendations
+* 📋 Risk reasons
+* 📊 Analytics dashboard
+* 🔍 Feature importance
+* 🔄 What-If analysis
+* 🕒 Prediction history
+* 📥 Downloadable student report
+* 🗄️ SQLite database
+* 🧪 Backend API testing
+* 🐳 Docker support
+* ⚙️ GitHub Actions CI/CD
 
-- Python
-- FastAPI
-- Pydantic
-- SQLite
-- scikit-learn
-- pandas
-- joblib
-- React
-- Vite
-- Docker
-- GitHub Actions
-- Pytest
+## 🛠️ Technology Stack
 
-## Project Structure
+### Frontend
+
+* React
+* Vite
+* JavaScript
+* CSS
+
+### Backend
+
+* Python
+* FastAPI
+* Pydantic
+* SQLite
+
+### Machine Learning
+
+* scikit-learn
+* Random Forest
+* pandas
+* joblib
+
+### Development
+
+* Pytest
+* Docker
+* GitHub Actions
+
+## 📂 Project Structure
 
 ```text
 student-performance-cicd-starter/
+│
 ├── backend/
 │   ├── app.py
 │   ├── requirements.txt
@@ -47,20 +73,25 @@ student-performance-cicd-starter/
 │   ├── tests/
 │   │   └── test_api.py
 │   └── student_performance.db
+│
 ├── dataset/
 │   └── student_performance.csv
+│
 ├── frontend/
 │   ├── index.html
 │   ├── package.json
 │   └── src/
 │       ├── main.jsx
 │       └── style.css
+│
 ├── ml/
 │   ├── preprocessing.py
 │   └── train.py
+│
 ├── .github/
 │   └── workflows/
 │       └── ci-cd.yml
+│
 ├── Dockerfile
 ├── docker-compose.yml
 ├── pytest.ini
@@ -68,322 +99,320 @@ student-performance-cicd-starter/
 └── .gitignore
 ```
 
-## Dataset Details
+## 📊 Input Features
 
-The dataset is located at [dataset/student_performance.csv](dataset/student_performance.csv).
+The application uses five student-related inputs:
 
-It contains the following fields:
+| Feature               | Description                       |
+| --------------------- | --------------------------------- |
+| Attendance            | Student attendance percentage     |
+| Internal Marks        | Internal examination marks        |
+| Assignment Percentage | Assignment completion/performance |
+| Study Hours           | Average study hours per day       |
+| Previous Marks        | Previous academic marks           |
 
-- attendance
-- internal_marks
-- assignment_percentage
-- study_hours
-- previous_marks
-- performance
+## 🤖 Machine Learning Model
 
-The model predicts the categorical label in `performance`:
+The project uses a **Random Forest Classifier**.
 
-- Good
-- Average
-- Poor
+The model predicts:
 
-## ML Model Details
+```text
+Good
+Average
+Poor
+```
 
-The project uses a Random Forest classifier trained on the student performance dataset.
-
-The model is trained in [ml/train.py](ml/train.py) and saved to:
+The trained model is stored at:
 
 ```text
 backend/model/student_model.pkl
 ```
 
-The model uses these input features:
+The model uses:
 
-- attendance
-- internal_marks
-- assignment_percentage
-- study_hours
-- previous_marks
+```text
+attendance
+internal_marks
+assignment_percentage
+study_hours
+previous_marks
+```
 
-The trained pipeline stores:
+## 🔄 How Prediction Works
 
-- the model object
-- the label encoder
-- the feature list
+```text
+Student Input
+     ↓
+React Frontend
+     ↓
+POST /predict
+     ↓
+FastAPI Backend
+     ↓
+Random Forest Model
+     ↓
+Performance Prediction
+     ↓
+Risk Assessment
+     ↓
+Recommendations
+     ↓
+SQLite Prediction History
+     ↓
+Dashboard
+```
 
-## Backend Setup
+## ⚠️ Risk Assessment
 
-### 1. Create a virtual environment
+Risk assessment is separate from the machine-learning performance prediction.
+
+The system evaluates factors such as:
+
+* Attendance
+* Internal marks
+* Assignment performance
+* Study hours
+* Previous marks
+
+Study hours of `0` are treated as a serious risk condition.
+
+The risk levels are:
+
+```text
+LOW
+MEDIUM
+HIGH
+```
+
+Both **MEDIUM** and **HIGH** risk students are counted as at-risk students in the analytics.
+
+## 📊 Analytics
+
+The dashboard provides:
+
+* Total Predictions
+* Good Predictions
+* Average Predictions
+* Poor Predictions
+* At-Risk Students
+* Average Attendance
+* Average Marks
+* Average Study Hours
+
+Analytics are calculated from the actual SQLite prediction history.
+
+## 🔍 Feature Importance
+
+The dashboard displays the feature importance obtained from the trained Random Forest model.
+
+The features include:
+
+* Study Hours
+* Internal Marks
+* Previous Marks
+* Attendance
+* Assignment Percentage
+
+## 🔄 What-If Analysis
+
+What-If Analysis allows you to compare:
+
+```text
+Current Student Inputs
+          VS
+Modified Student Inputs
+```
+
+The system shows how changing the student's inputs affects:
+
+* Prediction
+* Confidence
+* Prediction outcome
+
+What-If analysis does **not** create a new prediction-history record.
+
+## 🕒 Prediction History
+
+Successful predictions are stored in the SQLite database.
+
+Each prediction can contain:
+
+* Attendance
+* Internal Marks
+* Assignment Percentage
+* Study Hours
+* Previous Marks
+* Prediction
+* Confidence
+* Risk Level
+* Risk Reasons
+* Recommendations
+* Created Time
+
+## 💻 Running the Project Locally
+
+### 1. Clone the repository
+
+```bash
+git clone YOUR_GITHUB_REPOSITORY_URL
+cd student-performance-cicd-starter
+```
+
+### 2. Create the Python virtual environment
 
 ```bash
 python -m venv venv
 ```
 
-On Windows PowerShell:
+### 3. Activate the environment
+
+Windows PowerShell:
 
 ```powershell
 .\venv\Scripts\Activate.ps1
 ```
 
-### 2. Install backend dependencies
+### 4. Install backend dependencies
 
 ```bash
 pip install -r backend/requirements.txt
 ```
 
-### 3. Start the FastAPI backend
+### 5. Start the FastAPI backend
 
 From the project root:
 
 ```bash
-uvicorn backend.app:app --reload
+python -m uvicorn backend.app:app --host 127.0.0.1 --port 8000
 ```
 
-The API will be available at:
-
-- http://127.0.0.1:8000
-- http://127.0.0.1:8000/docs
-
-## Frontend Setup
-
-### 1. Install frontend dependencies
-
-```bash
-cd frontend
-npm install
-```
-
-### 2. Run the React/Vite frontend
-
-```bash
-npm run dev
-```
-
-The app is available at:
-
-- http://localhost:5173
-
-## Environment Variable Configuration
-
-The frontend supports a configurable API base URL:
-
-```bash
-VITE_API_BASE_URL=http://127.0.0.1:8000
-```
-
-If not set, it defaults to:
+Backend:
 
 ```text
 http://127.0.0.1:8000
 ```
 
-## How to Train the Model
+API documentation:
 
-Run:
+```text
+http://127.0.0.1:8000/docs
+```
+
+### 6. Start the frontend
+
+Open another terminal:
 
 ```bash
-python ml/train.py
+cd frontend
+npm install
+npm run dev
 ```
 
-This trains the Random Forest model and saves the model bundle to the backend model directory.
+The frontend normally runs at:
 
-## API Endpoints
-
-### GET /
-Returns a basic service status message.
-
-### GET /health
-Returns health information and model status.
-
-### POST /predict
-Predicts a student's performance and stores the record in SQLite prediction history.
-
-Request body example:
-
-```json
-{
-  "attendance": 85,
-  "internal_marks": 78,
-  "assignment_percentage": 90,
-  "study_hours": 4,
-  "previous_marks": 82
-}
+```text
+http://localhost:5173
 ```
 
-Response example:
+Keep both the backend and frontend running while using the application.
 
-```json
-{
-  "prediction": "Good",
-  "confidence": 66.0,
-  "risk_level": "LOW",
-  "reasons": [],
-  "recommendations": ["Keep your learning routine steady and continue improving across all academic areas."],
-  "feature_importance": [
-    {
-      "feature": "study_hours",
-      "importance": 0.35,
-      "label": "Study Hours"
-    }
-  ]
-}
-```
+## 🔗 API Endpoints
 
-### GET /feature-importance
-Returns the feature importance rankings from the trained model.
+| Method | Endpoint              | Purpose                     |
+| ------ | --------------------- | --------------------------- |
+| GET    | `/`                   | API status                  |
+| GET    | `/health`             | Backend/model health        |
+| POST   | `/predict`            | Predict student performance |
+| GET    | `/analytics`          | Dashboard analytics         |
+| GET    | `/feature-importance` | Model feature importance    |
+| GET    | `/model-comparison`   | Model comparison            |
+| GET    | `/prediction-history` | Prediction history          |
+| POST   | `/what-if`            | What-If analysis            |
+| DELETE | `/prediction-history` | Clear development history   |
 
-### GET /model-comparison
-Returns model comparison metrics for multiple classifiers trained on the dataset.
+## 🧪 Testing
 
-### GET /prediction-history
-Returns the stored prediction history records from SQLite.
+Run backend tests from the project root:
 
-### GET /analytics
-Returns aggregate analytics based on the actual database contents.
-
-### POST /what-if
-Compares the current input profile to a modified profile and shows how the prediction changes.
-
-### DELETE /prediction-history
-Clears the prediction history. This is intended for local development and testing.
-
-## Prediction Flow
-
-1. The frontend collects student metrics.
-2. The frontend sends a POST request to `/predict`.
-3. The backend validates input values.
-4. The backend loads the saved ML model.
-5. The backend predicts a label using the trained Random Forest model.
-6. The backend computes confidence from the model probability.
-7. The backend calculates risk level and recommendations.
-8. The backend stores the result in SQLite.
-9. The frontend displays the exact response from the backend.
-
-## Risk Calculation
-
-The backend computes risk based on the input values and the predicted label.
-
-Important behavior:
-
-- `study_hours <= 0` is treated as a serious risk condition.
-- Low attendance, low internal marks, weak assignment performance, and low previous marks add risk reasons.
-- The risk result can be LOW, MEDIUM, or HIGH.
-- MEDIUM and HIGH are included in At-Risk Students analytics.
-
-## Analytics
-
-Analytics are calculated from actual rows stored in the SQLite database.
-
-The `/analytics` endpoint returns:
-
-- total_predictions
-- good_predictions
-- average_predictions
-- poor_predictions
-- at_risk_students
-- average_attendance
-- average_marks
-- average_study_hours
-
-## What-If Analysis
-
-The `/what-if` endpoint compares two student profiles:
-
-- current
-- modified
-
-It returns both predictions, confidence values, a message describing the changed outcome, and the prediction delta.
-
-## Prediction History
-
-Prediction results are stored in SQLite using the `prediction_history` table. The app stores:
-
-- attendance
-- internal_marks
-- assignment_percentage
-- study_hours
-- previous_marks
-- prediction
-- confidence
-- risk_level
-- reasons
-- recommendations
-- created_at
-
-## Testing
-
-Run the backend test suite:
-
-```bash
+```powershell
 .\venv\Scripts\python.exe -m pytest -q
 ```
 
-The project includes tests for:
+The project currently passes its backend test suite.
 
-- home endpoint
-- health endpoint
-- prediction endpoint
-- invalid input rejection
-- feature importance endpoint
-- model comparison endpoint
-- prediction history endpoint
-- analytics endpoint
-- what-if endpoint
-- risk logic
-- history reset behavior
-
-## Production Frontend Build
-
-Run:
+## 📦 Frontend Production Build
 
 ```bash
 cd frontend
 npm run build
 ```
 
-This produces a production bundle in the `frontend/dist` directory.
+The production files are generated in:
 
-## Docker Instructions
+```text
+frontend/dist
+```
 
-The repository includes a `Dockerfile` and `docker-compose.yml`.
+## 🐳 Docker
 
-Build the backend image:
+Build the image:
 
 ```bash
 docker build -t student-performance-api .
 ```
 
-Run the container:
+Run it:
 
 ```bash
 docker run -d --name student-performance-container -p 8000:8000 student-performance-api
 ```
 
-Or use Docker Compose:
+Or:
 
 ```bash
 docker-compose up --build
 ```
 
-## CI/CD
+## ⚙️ CI/CD
 
-The project includes GitHub Actions workflow automation in:
+The project includes GitHub Actions configuration in:
 
 ```text
 .github/workflows/ci-cd.yml
 ```
 
-The workflow runs:
+The workflow checks:
 
-- backend dependency install
-- backend tests
-- frontend dependency install
-- frontend production build
-- Docker image build
+* Backend dependencies
+* Backend tests
+* Frontend dependencies
+* Frontend production build
+* Docker image build
 
-## Notes
+## 🌐 Live Demo
 
-- The prediction logic is driven by the actual trained model.
-- Risk thresholds and recommendations are handled in the backend.
-- Analytics and history are based on the real SQLite database records.
-- The frontend shows the exact response returned by the backend prediction API.
+> Add your deployed application URL here after deploying the frontend and backend.
+
+```text
+Live Demo: COMING SOON
+```
+
+## 📌 Project Status
+
+The application has been tested locally with:
+
+* FastAPI backend
+* React/Vite frontend
+* Machine-learning prediction
+* Analytics
+* Feature importance
+* Prediction history
+* What-If analysis
+* Risk assessment
+
+## 👨‍💻 Author
+
+**Student Performance Prediction Dashboard**
+
+Built as a Machine Learning + Full-Stack application project.
