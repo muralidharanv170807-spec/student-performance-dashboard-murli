@@ -8,7 +8,7 @@ from typing import Any
 
 import joblib
 import pandas as pd
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from sklearn.ensemble import RandomForestClassifier
@@ -32,7 +32,6 @@ FEATURES = [
     "previous_marks",
 ]
 TARGET_FIELD = "performance"
-
 RISK_THRESHOLDS = {
     "attendance": 70,
     "internal_marks": 60,
@@ -74,7 +73,6 @@ def init_db() -> None:
 
 init_db()
 
-
 model_data = joblib.load(MODEL_PATH)
 model = model_data["model"]
 label_encoder = model_data["label_encoder"]
@@ -96,7 +94,7 @@ class WhatIfInput(BaseModel):
 
 app = FastAPI(
     title="Student Performance Prediction API",
-    description="Predictive student performance analytics with risk, recommendations, and comparison tools.",
+    description="API for student performance prediction, early warnings, recommendations, analytics, and what-if comparison.",
     version="2.0.0",
 )
 
@@ -106,6 +104,7 @@ app.add_middleware(
         "http://localhost:5173",
         "http://127.0.0.1:5173",
         "http://localhost:3000",
+        "http://127.0.0.1:8000",
         "https://student-performance-cicd-1.onrender.com",
     ],
     allow_credentials=True,
@@ -129,14 +128,18 @@ def compute_feature_importance() -> list[dict[str, Any]]:
 
 def calculate_risk_level(student_values: dict[str, float], prediction: str) -> tuple[str, list[str]]:
     reasons: list[str] = []
+    critical_condition = False
 
+    if student_values["study_hours"] <= 0:
+        critical_condition = True
+        reasons.append("Study hours are zero, which is a serious risk signal.")
     if student_values["attendance"] < RISK_THRESHOLDS["attendance"]:
         reasons.append("Attendance is below the recommended level.")
     if student_values["internal_marks"] < RISK_THRESHOLDS["internal_marks"]:
         reasons.append("Internal marks are below the expected range.")
     if student_values["assignment_percentage"] < RISK_THRESHOLDS["assignment_percentage"]:
         reasons.append("Assignment performance is below the expected range.")
-    if student_values["study_hours"] < RISK_THRESHOLDS["study_hours"]:
+    if student_values["study_hours"] < RISK_THRESHOLDS["study_hours"] and student_values["study_hours"] > 0:
         reasons.append("Study hours are below the recommended level.")
     if student_values["previous_marks"] < RISK_THRESHOLDS["previous_marks"]:
         reasons.append("Previous marks indicate weaker academic readiness.")
@@ -145,7 +148,9 @@ def calculate_risk_level(student_values: dict[str, float], prediction: str) -> t
 
     if not reasons:
         return "LOW", []
-    if len(reasons) <= 2:
+    if critical_condition or len(reasons) >= 3:
+        return "HIGH", reasons
+    if len(reasons) in {1, 2}:
         return "MEDIUM", reasons
     return "HIGH", reasons
 
@@ -159,7 +164,7 @@ def generate_recommendations(student_values: dict[str, float], prediction: str) 
         recommendations.append("Focus more on internal assessments by revising earlier topics and practicing regularly.")
     if student_values["assignment_percentage"] < 60:
         recommendations.append("Complete assignments on time and review the feedback to improve performance.")
-    if student_values["study_hours"] < 3:
+    if student_values["study_hours"] <= 0 or student_values["study_hours"] < 3:
         recommendations.append("Increase daily study time to strengthen understanding and retention.")
     if student_values["previous_marks"] < 60:
         recommendations.append("Seek academic support and revise previous exam concepts to build confidence.")
@@ -214,6 +219,13 @@ def record_prediction(student_values: dict[str, float], result: dict[str, Any]) 
             datetime.now(timezone.utc).isoformat(),
         ),
     )
+    conn.commit()
+    conn.close()
+
+
+def reset_prediction_history() -> None:
+    conn = get_db_connection()
+    conn.execute("DELETE FROM prediction_history")
     conn.commit()
     conn.close()
 
@@ -306,7 +318,7 @@ def prediction_history() -> dict[str, Any]:
     ).fetchall()
     conn.close()
 
-    history = []
+    history: list[dict[str, Any]] = []
     for row in rows:
         history.append(
             {
@@ -337,12 +349,10 @@ def analytics() -> dict[str, Any]:
                SUM(CASE WHEN prediction = 'Good' THEN 1 ELSE 0 END) AS good_count,
                SUM(CASE WHEN prediction = 'Average' THEN 1 ELSE 0 END) AS average_count,
                SUM(CASE WHEN prediction = 'Poor' THEN 1 ELSE 0 END) AS poor_count,
-               SUM(CASE WHEN risk_level = 'HIGH' THEN 1 ELSE 0 END) AS high_risk_count,
+               SUM(CASE WHEN risk_level IN ('MEDIUM', 'HIGH') THEN 1 ELSE 0 END) AS at_risk_count,
                AVG(attendance) AS avg_attendance,
-               AVG(internal_marks) AS avg_internal_marks,
-               AVG(assignment_percentage) AS avg_assignment_percentage,
-               AVG(study_hours) AS avg_study_hours,
-               AVG(previous_marks) AS avg_previous_marks
+               AVG((internal_marks + previous_marks) / 2.0) AS avg_marks,
+               AVG(study_hours) AS avg_study_hours
         FROM prediction_history
         """
     ).fetchone()
@@ -365,9 +375,9 @@ def analytics() -> dict[str, Any]:
         "good_predictions": summary["good_count"],
         "average_predictions": summary["average_count"],
         "poor_predictions": summary["poor_count"],
-        "at_risk_students": summary["high_risk_count"],
+        "at_risk_students": summary["at_risk_count"],
         "average_attendance": round(float(summary["avg_attendance"] or 0), 2),
-        "average_marks": round(float(((summary["avg_internal_marks"] or 0) + (summary["avg_previous_marks"] or 0)) / 2), 2),
+        "average_marks": round(float(summary["avg_marks"] or 0), 2),
         "average_study_hours": round(float(summary["avg_study_hours"] or 0), 2),
     }
 
@@ -405,17 +415,32 @@ def what_if(payload: WhatIfInput) -> dict[str, Any]:
 
     current_result = build_prediction_payload(current_values)
     modified_result = build_prediction_payload(modified_values)
-    difference = current_result["prediction"] + " → " + modified_result["prediction"]
+    prediction_change_message = (
+        f"Performance may improve from {current_result['prediction']} to {modified_result['prediction']}."
+        if current_result["prediction"] != modified_result["prediction"]
+        else f"Performance remains {current_result['prediction']} after the update."
+    )
 
     return {
         "current": current_result,
         "modified": modified_result,
-        "difference": difference,
+        "current_confidence": current_result["confidence"],
+        "modified_confidence": modified_result["confidence"],
+        "difference": f"{current_result['prediction']} → {modified_result['prediction']}",
+        "message": prediction_change_message,
         "prediction_changed": current_result["prediction"] != modified_result["prediction"],
     }
 
 
+@app.delete("/prediction-history", summary="Clear stored prediction history (development only)")
+def clear_prediction_history() -> dict[str, str]:
+    reset_prediction_history()
+    return {"message": "Prediction history cleared successfully."}
+
+
 if __name__ == "__main__":
     import uvicorn
+
+    uvicorn.run("backend.app:app", host="0.0.0.0", port=8000, reload=True)
 
     uvicorn.run("backend.app:app", host="0.0.0.0", port=8000, reload=True)

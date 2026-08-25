@@ -12,11 +12,11 @@ const DEFAULT_FORM = {
 };
 
 const fieldLabels = {
-  attendance: "Attendance",
-  internal_marks: "Internal Marks",
-  assignment_percentage: "Assignments",
-  study_hours: "Study Hours",
-  previous_marks: "Previous Marks",
+  attendance: "Attendance (%)",
+  internal_marks: "Internal Marks (%)",
+  assignment_percentage: "Assignment Percentage (%)",
+  study_hours: "Study Hours (hours/day)",
+  previous_marks: "Previous Marks (%)",
 };
 
 function App() {
@@ -59,7 +59,7 @@ function App() {
       const data = await response.json();
       setAnalytics(data);
     } catch (err) {
-      console.error(err);
+      setError(err.message || "Unable to load analytics.");
     }
   };
 
@@ -70,7 +70,7 @@ function App() {
       const data = await response.json();
       setHistory(data.history || []);
     } catch (err) {
-      console.error(err);
+      setError(err.message || "Unable to load history.");
     }
   };
 
@@ -81,13 +81,12 @@ function App() {
       const data = await response.json();
       setFeatureImportance(data.feature_importance || []);
     } catch (err) {
-      console.error(err);
+      setError(err.message || "Unable to load feature importance.");
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setLoading(true);
     setError("");
     setResult(null);
@@ -124,6 +123,7 @@ function App() {
   const handleWhatIf = async () => {
     setWhatIfLoading(true);
     setWhatIfResult(null);
+    setError("");
 
     try {
       const response = await fetch(`${API_BASE}/what-if`, {
@@ -160,6 +160,8 @@ function App() {
       setWhatIfLoading(false);
     }
   };
+
+  const handleReset = () => setFormData(DEFAULT_FORM);
 
   const downloadReport = () => {
     if (!result) return;
@@ -215,7 +217,7 @@ function App() {
                 <input
                   type="number"
                   name={key}
-                  min={key === "study_hours" ? 0 : 0}
+                  min={0}
                   max={key === "study_hours" ? 24 : 100}
                   step={key === "study_hours" ? "0.1" : "1"}
                   value={formData[key]}
@@ -229,7 +231,7 @@ function App() {
               <button type="submit" disabled={loading}>
                 {loading ? "Predicting..." : "Predict Performance"}
               </button>
-              <button type="button" className="secondary" onClick={() => setFormData(DEFAULT_FORM)}>
+              <button type="button" className="secondary" onClick={handleReset}>
                 Reset
               </button>
             </div>
@@ -249,7 +251,7 @@ function App() {
 
               <div className="stats-grid">
                 <div className="stat-card">
-                  <span>Confidence</span>
+                  <span>Prediction Confidence</span>
                   <strong>{result.confidence}%</strong>
                 </div>
                 <div className="stat-card">
@@ -257,16 +259,16 @@ function App() {
                   <strong>{formData.attendance}%</strong>
                 </div>
                 <div className="stat-card">
-                  <span>Internal</span>
+                  <span>Internal Marks</span>
                   <strong>{formData.internal_marks}%</strong>
                 </div>
                 <div className="stat-card">
-                  <span>Assignments</span>
+                  <span>Assignment Percentage</span>
                   <strong>{formData.assignment_percentage}%</strong>
                 </div>
                 <div className="stat-card">
                   <span>Study Hours</span>
-                  <strong>{formData.study_hours}h</strong>
+                  <strong>{formData.study_hours}h/day</strong>
                 </div>
                 <div className="stat-card">
                   <span>Previous Marks</span>
@@ -310,31 +312,31 @@ function App() {
                 <strong>{analytics.total_predictions}</strong>
               </div>
               <div className="mini-card">
-                <span>Good</span>
+                <span>Good Predictions</span>
                 <strong>{analytics.good_predictions}</strong>
               </div>
               <div className="mini-card">
-                <span>Average</span>
+                <span>Average Predictions</span>
                 <strong>{analytics.average_predictions}</strong>
               </div>
               <div className="mini-card">
-                <span>Poor</span>
+                <span>Poor Predictions</span>
                 <strong>{analytics.poor_predictions}</strong>
               </div>
               <div className="mini-card">
-                <span>At-Risk</span>
+                <span>At-Risk Students</span>
                 <strong>{analytics.at_risk_students}</strong>
               </div>
               <div className="mini-card">
-                <span>Avg Attendance</span>
+                <span>Average Attendance</span>
                 <strong>{analytics.average_attendance}%</strong>
               </div>
               <div className="mini-card">
-                <span>Avg Marks</span>
+                <span>Average Marks</span>
                 <strong>{analytics.average_marks}%</strong>
               </div>
               <div className="mini-card">
-                <span>Avg Study Hrs</span>
+                <span>Average Study Hours</span>
                 <strong>{analytics.average_study_hours}h</strong>
               </div>
             </div>
@@ -426,7 +428,17 @@ function App() {
                 <h3>{whatIfResult.modified.prediction}</h3>
               </div>
             </div>
-            <p className="change-text">Prediction: {whatIfResult.difference}</p>
+            <div className="comparison-row confidence-row">
+              <div>
+                <p className="label">Current Confidence</p>
+                <strong>{whatIfResult.current_confidence}%</strong>
+              </div>
+              <div>
+                <p className="label">Modified Confidence</p>
+                <strong>{whatIfResult.modified_confidence}%</strong>
+              </div>
+            </div>
+            <p className="change-text">{whatIfResult.message}</p>
           </div>
         )}
       </section>
