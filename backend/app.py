@@ -106,6 +106,7 @@ app.add_middleware(
         "http://localhost:3000",
         "http://127.0.0.1:8000",
         "https://student-performance-cicd-1.onrender.com",
+        "https://student-performance-dashboard-murli.onrender.com",
     ],
     allow_credentials=True,
     allow_methods=["*"],
